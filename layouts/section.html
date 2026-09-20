@@ -1,0 +1,15 @@
+{{ define "main" }}
+{{/* /posts/ answers the same question the home page does, so it lists the same
+     way rather than growing a second shape. */}}
+<h1 class="page-title display">{{ .Title }}</h1>
+{{ with .Content }}<div class="page-lede">{{ . }}</div>{{ end }}
+<ul class="posts">
+ {{ range .Pages.ByDate.Reverse }}
+ <li>
+  <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2 January 2006" }}</time>
+  <a class="post-link" href="{{ .RelPermalink }}">{{ .Title }}</a>{{ if .Draft }}<span class="draft-flag">draft</span>{{ end }}
+  {{ with .Description }}<p class="post-summary">{{ . }}</p>{{ end }}
+ </li>
+ {{ end }}
+</ul>
+{{ end }}

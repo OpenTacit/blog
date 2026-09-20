@@ -1,0 +1,87 @@
+# Copyright 2026 The OpenTacit Authors
+# SPDX-License-Identifier: Apache-2.0
+
+# Build the site and publish it to GitHub Pages, which serves it at
+# blog.opentacit.com (static/CNAME sets that, and the DNS record points at
+# GitHub). A push to main publishes; nothing else does.
+#
+# Hugo is pinned and fetched from its own release, with the checksum checked,
+# rather than taken from a third-party action. One more action in this file is
+# one more account that can change what publishes here.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time, and a queued run waits rather than cancelling: a
+# cancelled deploy can leave the live site a build behind with nothing saying so.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.166.0
+      HUGO_SHA256: 45228f5a52eb118b0ca168068f01d7df0447314a24056f1d29667ed9fc368308
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # Hugo reads git dates for .Lastmod
+      - name: Install Hugo
+        run: |
+          set -euo pipefail
+          url="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_linux-amd64.tar.gz"
+          curl -fsSL "$url" -o hugo.tar.gz
+          echo "${HUGO_SHA256}  hugo.tar.gz" | sha256sum --check --status || {
+            echo "hugo tarball checksum mismatch — refusing to build" >&2
+            echo "if the pin was bumped, update HUGO_SHA256 from the release's checksums file" >&2
+            exit 1
+          }
+          tar -xzf hugo.tar.gz hugo
+          sudo install -m 0755 hugo /usr/local/bin/hugo
+          hugo version
+      - uses: actions/configure-pages@v5
+      - name: Build
+        env:
+          HUGO_ENVIRONMENT: production
+        run: hugo --minify --baseURL "https://blog.opentacit.com/"
+      - name: Check the build
+        run: |
+          set -euo pipefail
+          test -f public/index.html
+          test -f public/CNAME
+          # The custom domain has to survive the build: without this file GitHub
+          # serves the site at opentacit.github.io and drops the domain.
+          grep -qx 'blog.opentacit.com' public/CNAME
+          # A draft must never reach the live site, whatever the flag said
+          # locally. Two things this pattern has to get right, both found by
+          # running it: the class is matched without its quotes, because
+          # --minify strips them and a pattern copied from the template would
+          # match nothing; and only HTML is searched, because the stylesheet
+          # carries the rule that styles the flag and would fail every build.
+          ! grep -rl --include='*.html' 'draft-flag' public/ || {
+            echo "a draft reached the build — remove draft: true or keep it out of main" >&2
+            exit 1
+          }
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

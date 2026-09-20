@@ -1,0 +1,41 @@
+# Copyright 2026 The OpenTacit Authors
+# SPDX-License-Identifier: Apache-2.0
+
+baseURL = "https://blog.opentacit.com/"
+locale = "en-us"
+title = "OpenTacit"
+enableRobotsTXT = true
+
+# Dates only, no time of day: a post is published on a day, and an hour in the
+# markup is an hour somebody has to keep true.
+[frontmatter]
+  date = ["date", "publishDate", "lastmod"]
+
+# A post lives at /<slug>/. The section is a detail of how the files are kept,
+# and the day it is published is not part of what the post is about — both of
+# them in the address would be two more things that can never change.
+[permalinks]
+  posts = "/:slug/"
+
+[params]
+  description = "Notes from the OpenTacit project: the measured playbook for working with AI."
+  site = "https://opentacit.com"
+  repo = "https://github.com/opentacit/tacit"
+
+[markup.goldmark.renderer]
+  # The posts are ours. Raw HTML in one is a figure or a diagram, not an attack.
+  unsafe = true
+
+[markup.highlight]
+  # Chroma paints code in colours from its own palette, which would be the
+  # second palette this site is not allowed to have. Code is Plex Mono on a
+  # plate, and that is the whole treatment.
+  noClasses = false
+  style = "bw"
+
+[services.rss]
+  limit = 50
+
+[taxonomies]
+  # None. Tags earn their place when there are enough posts for a reader to
+  # want one, and an empty taxonomy page is a grid with nothing to say.

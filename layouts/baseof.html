@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
+{{ partial "head.html" . }}
+</head>
+<body>
+{{ partial "masthead.html" . }}
+<main class="wrap">
+{{ block "main" . }}{{ end }}
+</main>
+{{ partial "foot.html" . }}
+{{ partial "theme.html" . }}
+</body>
+</html>

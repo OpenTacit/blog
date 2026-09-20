@@ -1,0 +1,24 @@
+{{- $tokens := resources.Get "css/tokens.css" -}}
+{{- $blog := resources.Get "css/blog.css" -}}
+{{- $css := slice $tokens $blog | resources.Concat "css/blog.css" | minify | fingerprint -}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ if .IsHome }}{{ .Site.Title }} Blog{{ else }}{{ .Title }} · {{ .Site.Title }}{{ end }}</title>
+<meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+<link rel="canonical" href="{{ .Permalink }}">
+{{- /* One stylesheet, tokens first. The palette has one source (hack/sync-tokens.sh). */}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
+{{- /* The theme is read before first paint, so a reader who chose dark never
+       sees a white flash. Same storage key as the registry, though a different
+       origin keeps its own copy — a browser will not share one across hosts. */}}
+<script>(function(){try{var t=localStorage.getItem('tacit-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+{{- with .OutputFormats.Get "rss" }}
+<link rel="alternate" type="application/rss+xml" title="{{ $.Site.Title }}" href="{{ .Permalink }}">
+{{- end }}
+<meta property="og:site_name" content="{{ .Site.Title }}">
+<meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }} Blog{{ else }}{{ .Title }}{{ end }}">
+<meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta name="twitter:card" content="summary">

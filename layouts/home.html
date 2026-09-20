@@ -1,0 +1,20 @@
+{{ define "main" }}
+<h1 class="page-title display">{{ .Title | default "Blog" }}</h1>
+{{ with .Content }}<div class="page-lede">{{ . }}</div>{{ end }}
+{{ $posts := where site.RegularPages "Section" "posts" }}
+{{ if $posts }}
+<ul class="posts">
+ {{ range $posts.ByDate.Reverse }}
+ <li>
+  <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2 January 2006" }}</time>
+  <a class="post-link" href="{{ .RelPermalink }}">{{ .Title }}</a>{{ if .Draft }}<span class="draft-flag">draft</span>{{ end }}
+  {{ with .Description }}<p class="post-summary">{{ . }}</p>{{ end }}
+ </li>
+ {{ end }}
+</ul>
+{{ else }}
+{{/* An empty page says what would fill it, and where the next move is. */}}
+<p class="empty">No posts yet. The first one is <code>content/posts/</code> in this
+repository — write the file, drop <code>draft: true</code>, and it publishes on merge.</p>
+{{ end }}
+{{ end }}
