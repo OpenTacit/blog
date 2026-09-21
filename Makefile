@@ -3,7 +3,6 @@
 
 HUGO ?= hugo
 TACIT ?= ../tacit
-DOCS ?= ../tacit-internal-docs
 
 # The preview answers on every interface, so a draft can be read on a phone or
 # an iPad on the same network rather than only on this machine.
@@ -15,15 +14,7 @@ PORT ?= 1313
 # type, e.g. make serve HOST=longreach.tail81644.ts.net
 HOST ?= $(shell hostname -f 2>/dev/null || hostname)
 
-.PHONY: preview announcement serve build drafts site check clean
-
-## preview: write the announcement from ../tacit-internal-docs, then serve it.
-## The post is never committed — see hack/announcement.sh.
-preview: announcement serve
-
-## announcement: write the announcement into content/posts/ for review
-announcement:
-	./hack/announcement.sh $(DOCS)
+.PHONY: serve build drafts site check clean
 
 ## serve: the local preview, drafts included, on every interface at :1313
 serve:

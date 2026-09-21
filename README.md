@@ -11,8 +11,14 @@ should still be readable when that machine is off.
 
 ```sh
 hugo new content posts/some-post.md    # or copy an existing file
-make serve                             # http://localhost:1313, drafts included
+make serve                             # drafts included, on every interface at :1313
 ```
+
+The preview binds `0.0.0.0` so a phone or an iPad on the same network can read
+it, and the base URL follows the bind — live reload writes its own address into
+the page, so a localhost base URL read from another device loads once and then
+stops updating. `BIND`, `PORT` and `HOST` are overridable; `HOST` is the address
+you type, not what it binds to.
 
 The archetype starts every post with `draft: true`. A draft is visible in the
 local preview, marked as one, and never reaches the live site — CI fails the
@@ -84,19 +90,16 @@ answers 404. It fails quietly rather than loudly, which is why
 `../tacit-deployment/cloudflare/verify-blog.sh` exists: it checks the record,
 the certificate's issuer, the feed and the 404, and says which one broke.
 
-## The placeholder
+## The posts
 
-`content/posts/setting-up.md` exists to prove the site resolves — the domain,
-the certificate, the build, the feed and a post's address. It publishes, so the
-index is not empty while the wiring is being checked. Delete it once the
-announcement goes up; nothing else refers to it.
+`content/posts/` holds them. The first is the announcement,
+`introducing-opentacit.md`; an earlier copy of that post lives in
+`tacit-internal-docs/docs/distribution/` with the distribution plans it served,
+and this one is now the published version of record.
 
-The announcement itself is not in this repository. It stays in
-`tacit-internal-docs/docs/distribution/blog-introducing-tacit.md` until it is
-ready to publish, because a public repository's history keeps a file that a
-later commit deletes. Its claims about behaviour are worth checking against the
-user guide on the day it goes out, and every link in its closing section points
-at `github.com/opentacit/tacit`, which 404s until that repository is public.
+Every link in a post is live the moment it publishes, so check the ones that
+point at `github.com/opentacit/tacit` still answer — that repository was private
+while this site was being set up.
 
 ## Setting it up, once
 
