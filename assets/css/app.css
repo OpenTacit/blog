@@ -4294,20 +4294,6 @@ body.site::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:non
 /* Content sits above the fixed texture. Named layers keep the stacking rule scoped
    to the page's main regions. */
 .site-stage,.site-marquee,.site-flow,.site-body{position:relative;z-index:1}
-/* Except where a reader can drag the page itself. Safari's back-swipe on an
-   iPad slides the page you are returning to in from the edge, compositing it
-   against the one you are leaving — and a layer pinned to the WINDOW travels
-   with neither. It stays put across the whole gesture while both documents move
-   under it, so the masthead comes back looking ghosted, seen through a texture
-   that belongs to the screen rather than to either page. It was reported on the
-   blog, which wears this same ground.
-   On a touch screen the texture therefore scrolls with the page, which costs a
-   parallax nobody asked for and removes the layer that caused this. The pattern
-   is a uniform 26px grid, so at rest the two are indistinguishable. */
-@media (hover:none){
-  body.site{position:relative;min-height:100svh}
-  body.site::before{position:absolute}
-}
 
 /* ---- the hero ----
    Scale contrast does the work here, not decoration, and the scale is spent on the
