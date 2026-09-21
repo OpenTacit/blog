@@ -35,7 +35,14 @@ The header and the page layout are the landing page's, not a copy of it.
 - `layouts/partials/site-head.html` — the head's prelude: favicon, the theme the
   reader last chose, the boot guard, and the critical CSS floor.
 - `layouts/partials/site-masthead.html` and `site-theme.html` — the masthead
-  markup, byte for byte, and the theme toggle's behaviour.
+  markup and the theme toggle's behaviour.
+
+The masthead carries one rewrite, and the sync script fails rather than guess if
+the markup it expects has moved: the wordmark becomes a link to opentacit.com.
+On the landing page it is a `div` hidden from screen readers, because it names
+the page you are already on and the `h1` says it again; here it is the way back
+to the product. It keeps the lockup's colour and drops the running-text
+underline, so at rest the two mastheads still render as the same pixels.
 
 All five are generated. Editing one is a change that the next sync silently
 reverts, and `make check` fails first.

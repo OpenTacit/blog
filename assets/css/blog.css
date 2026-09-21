@@ -25,6 +25,14 @@
    column width and the rule under the masthead are untouched. */
 .site-stage.stage-flat{min-height:0}
 
+/* The wordmark is a link here — on the landing page it is the page you are
+   already on. It keeps the lockup's own colour, so at rest it renders exactly as
+   that page's does; what it must not take is the running-text underline, which
+   would strike through a mark and a word that are one object. The focus ring is
+   the one the repository icon beside it wears. */
+.site-wordmark:hover{text-decoration:none}
+.site-wordmark:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
 /* ---- the index ----
    A list, not a grid of cards: each row is a date in machine text, a title, and
    one line of what the post is about. A card would add a border per post and

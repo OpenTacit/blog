@@ -14,13 +14,14 @@
 # each of those is a value somebody would have had to keep in step by eye.
 #
 # So nothing here is written by hand. `make site` in the tacit repository renders
-# the page and its assets, and this script takes four things out of that bundle:
+# the page and its assets, and this script takes five things out of that bundle:
 #
 #   assets/css/app.css                  the product's stylesheet, whole
 #   static/assets/fonts/                the faces it names, at the paths it names
 #   layouts/partials/site-head.html     the head's prelude: favicon, theme init,
 #                                       the boot guard and the critical CSS floor
-#   layouts/partials/site-masthead.html the masthead, byte for byte
+#   layouts/partials/site-masthead.html the masthead, byte for byte but for one
+#                                       rewrite: the wordmark becomes a link home
 #   layouts/partials/site-theme.html    the theme toggle's behaviour
 #
 # The blog's own stylesheet adds what a landing page has no use for — a list of
@@ -79,7 +80,29 @@ for m in re.finditer(r'<(/?)div\b', page[i:]):
         j = i + m.end()
         j = page.index('>', j - 1) + 1
         break
-write("site-masthead.html", page[i:j], "the landing page's masthead")
+masthead = page[i:j]
+
+# One change, and the reason for it: on the landing page the wordmark is the
+# page you are already on, so it is a div and hidden from a screen reader, which
+# reads the h1 instead. Here it is the way back to the product, so it becomes a
+# link — and a link that is aria-hidden cannot be reached by keyboard or read
+# out, so that attribute goes with the div. Everything else is the page's own
+# markup, untouched.
+before = masthead
+masthead = masthead.replace(
+    '<div class="site-wordmark" aria-hidden="true">',
+    '<a class="site-wordmark" href="https://opentacit.com/">', 1)
+if masthead == before:
+    raise SystemExit("sync-site: the wordmark is not the div this rewrite knows how to link")
+# Its closing tag, which is the first </div> after the wordmark's own contents.
+k = masthead.index('<a class="site-wordmark"')
+masthead = masthead[:k] + masthead[k:].replace('</div>', '</a>', 1)
+for want in ['<a class="site-wordmark" href="https://opentacit.com/">', '</a>']:
+    if want not in masthead:
+        raise SystemExit("sync-site: the wordmark rewrite left the markup unbalanced")
+if masthead.count('<div') != masthead.count('</div>'):
+    raise SystemExit("sync-site: the wordmark rewrite left the masthead's divs unbalanced")
+write("site-masthead.html", masthead, "the landing page's masthead, with the wordmark linked home")
 
 # The theme toggle's behaviour, named by what it stores rather than by position.
 for m in re.finditer(r'<script>.*?</script>', page, re.S):
