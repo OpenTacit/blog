@@ -3,8 +3,17 @@
 
 HUGO ?= hugo
 TACIT ?= ../tacit
+DOCS ?= ../tacit-internal-docs
 
-.PHONY: serve build drafts site check clean
+.PHONY: preview announcement serve build drafts site check clean
+
+## preview: write the announcement from ../tacit-internal-docs, then serve it.
+## The post is never committed — see hack/announcement.sh.
+preview: announcement serve
+
+## announcement: write the announcement into content/posts/ for review
+announcement:
+	./hack/announcement.sh $(DOCS)
 
 ## serve: the local preview, drafts included, at http://localhost:1313
 serve:
