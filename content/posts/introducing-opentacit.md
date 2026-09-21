@@ -1,8 +1,8 @@
 ---
-title: "Introducing OpenTacit, designed to help people and organizations improve how they use AI"
+title: "Introducing OpenTacit, helping people and organizations improve how they use AI"
 slug: introducing-opentacit
 date: 2026-09-20
-description: "OpenTacit is now publicly available."
+description: "OpenTacit helps people use AI better, and is now publicly available."
 ---
 
 ## Capability overhang and the challenge of using AI effectively
