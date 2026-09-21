@@ -1,202 +1,103 @@
 /* Copyright 2026 The OpenTacit Authors */
 /* SPDX-License-Identifier: Apache-2.0 */
 
-/* The blog's stylesheet, and the whole of it: tokens.css carries the palette,
-   this file carries every rule, and the two are concatenated into one file the
-   site serves. Read the header of app.css in the tacit repository first — it is
-   the source of truth for how this product looks, and this file is a reading
-   surface built to sit beside it without arguing with it.
+/* What the landing page has no use for: a list of posts, and an article.
+   Everything else on this site — the ground, the stage, the masthead, the
+   wordmark, the nav, the theme toggle, the display type, the body column and
+   the close line — is app.css, taken whole by hack/sync-site.sh and loaded
+   before this file. Read that stylesheet's header before changing anything here.
 
-   Which register this belongs to. The live-data wall is the interface, and the
-   interface is for people already using the product. app.css grants exactly one
-   exemption, to the project page at the apex: a first impression at reading
-   size, where dashboard furniture read as corporate and rigid. A blog post is
-   that same kind of surface, so it takes the same departure — reading measure,
-   a textured ground, the metal setting on the page's one display line — and the
-   same limit: the palette is not exempt. Every colour below resolves from a
-   token, so both themes come out of one block and a hex literal here is a bug.
+   The test of every rule below: does app.css already say it? This file replaced
+   one that answered yes about forty times — a hand-written masthead that
+   resolved its colours from the real tokens and still did not match, because
+   matching a header means matching paddings, rule weight, icon box sizes and
+   the order of the parts. There is no palette here, no font stack, no ground
+   and no chrome. A hex literal is a bug, and so is a second opinion about a
+   value app.css already holds.
 
-   What the wall's rules still buy, and are kept:
+   Type follows the landing page's reading paragraphs (.site-lede,
+   .site-heading) rather than the dashboard's, because this is the same kind of
+   surface: prose a stranger reads at arm's length, not a working view. */
 
-   1. Plates are flat. One hairline border, one fill, square corners, no shadow
-      and no gradient fill. A code block is a plate.
-   2. Headings are quiet — Title Case, weight 600, reading size, no tracking and
-      no uppercase. The only loud thing on the page is its title.
-   3. The spectrum is rationed. It is spent on one 2px hairline at the top of
-      the window and nowhere else on the site.
-   4. Mona Sans is the voice. Plex Mono is machine text: commands, ids, keys,
-      dates in a list. It never sets prose.
-
-   Motion is 120-150ms on hover and focus, and nothing on load. Both the
-   reduced-motion and the forced-colors branch are at the end of this file and
-   have to survive any edit. */
-
-/* Self-hosted, like the registry's: this site fetches nothing at runtime, so it
-   renders the same on a plane as it does on the open internet. */
-@font-face{font-family:"Mona Sans";font-style:normal;font-weight:200 900;font-display:swap;
-  src:url("/fonts/mona-sans.woff2") format("woff2")}
-@font-face{font-family:"Plex Mono";font-style:normal;font-weight:400;font-display:swap;
-  src:url("/fonts/plex-mono-400.woff2") format("woff2")}
-@font-face{font-family:"Plex Mono";font-style:normal;font-weight:600;font-display:swap;
-  src:url("/fonts/plex-mono-600.woff2") format("woff2")}
-
-*,*::before,*::after{box-sizing:border-box}
-html{background:var(--plane);-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--plane);color:var(--ink);
-  font-family:var(--font-ui);font-size:17px;line-height:1.65;
-  font-synthesis-weight:none}
-
-/* The one place the spectrum is spent. A 2px band across the top of the window,
-   which is the same gesture as the hairline over a hero panel on the wall. */
-body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;z-index:3;
-  background:var(--spectrum);pointer-events:none}
-/* The ground's texture, from the project page: the ink colour at a whisper, so
-   it inverts with the theme for free. Fixed, so it belongs to the window. */
-body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:radial-gradient(circle,color-mix(in srgb,var(--ink) 13%,transparent) 1px,transparent 1.2px);
-  background-size:26px 26px}
-.masthead,.wrap,.foot{position:relative;z-index:1}
-
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:1px}
-img,video{max-width:100%;height:auto}
-hr{border:0;border-top:1px solid var(--rule);margin:2.5rem 0}
-
-/* ---- the masthead ----
-   The project page's row, and deliberately the same one: mark and wordmark at
-   the left, everything else pushed right by an auto margin, a rule under all of
-   it. A reader arriving from opentacit.com should not have to check they are
-   still in the same place. */
-.masthead{display:flex;align-items:center;flex-wrap:wrap;gap:.6rem 1.25rem;
-  max-width:62rem;margin:0 auto;padding:1.15rem clamp(1.2rem,5vw,3rem) 1.2rem;
-  border-bottom:1px solid var(--rule)}
-.wordmark{display:flex;align-items:center;gap:.28em;margin:0;
-  font-size:1.5rem;font-weight:600;font-variation-settings:"wdth" 110;
-  line-height:1;white-space:nowrap;color:var(--accent)}
-.wordmark:hover{text-decoration:none}
-.wordmark span{font-size:.58em}
-.wordmark .mark{width:1cap;height:1cap;flex:none;color:currentColor}
-.nav{display:flex;align-items:center;gap:1.35rem;margin-left:auto}
-.nav a{color:var(--ink-2);font-size:13.5px;font-weight:500;white-space:nowrap;
-  transition:color 130ms ease}
-.nav a:hover{color:var(--ink);text-decoration:none}
-.nav .gh{display:inline-flex;align-items:center;justify-content:center;
-  width:32px;height:32px;flex:none}
-.theme-toggle{display:inline-flex;align-items:center;justify-content:center;
-  width:32px;height:32px;padding:0;flex:none;
-  background:none;border:0;color:var(--ink-2);cursor:pointer;
-  transition:color 130ms ease}
-.theme-toggle:hover{color:var(--ink)}
-.theme-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-
-.wrap{max-width:62rem;margin:0 auto;padding:clamp(2rem,5vh,3.5rem) clamp(1.2rem,5vw,3rem) 4rem}
-
-/* ---- display type ----
-   Cool steel with one hard light across it, the same setting the project page
-   gives its headline. It belongs to a page's single largest line and to nothing
-   else: applied to a post's h2 it turns the page into a showroom. */
-.display{width:fit-content;max-width:100%;color:var(--ink);
-  background:var(--site-metal) center/100% 100% no-repeat;
-  -webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;text-shadow:var(--site-metal-light)}
-
-.page-title{margin:0 0 .5rem;max-width:22ch;
-  font-size:clamp(2rem,4.4vw,3.2rem);font-weight:600;line-height:1.05;
-  letter-spacing:-.03em;text-wrap:balance}
-.page-lede{margin:0 0 3rem;max-width:34rem;color:var(--ink-2);
-  font-size:clamp(17px,1.5vw,20px);line-height:1.6}
+/* The stage is as tall as what is in it. The 78svh floor belongs to the hero on
+   the landing page, and a blog page has no hero — with the floor left in, a
+   post title would sit alone above most of a screen of empty ground. Padding,
+   column width and the rule under the masthead are untouched. */
+.site-stage.stage-flat{min-height:0}
 
 /* ---- the index ----
-   A list, not a grid of cards. Each row is a date in machine text, a title, and
-   one line of what the post is about; a card would add a border per post and
+   A list, not a grid of cards: each row is a date in machine text, a title, and
+   one line of what the post is about. A card would add a border per post and
    say nothing the row does not. */
-.posts{list-style:none;margin:0;padding:0}
-.posts li{padding:1.5rem 0;border-top:1px solid var(--rule)}
-.posts li:last-child{border-bottom:1px solid var(--rule)}
-.post-date{display:block;margin-bottom:.35rem;
+.post-list{list-style:none;margin:0;padding:0;max-width:44rem}
+.post-list li{padding:1.6rem 0;border-top:1px solid var(--rule)}
+.post-list li:last-child{border-bottom:1px solid var(--rule)}
+.post-date{display:block;margin-bottom:.4rem;
   font-family:var(--font-mono);font-size:12px;color:var(--muted)}
-.post-link{display:block;max-width:30ch;color:var(--ink);
-  font-size:clamp(1.25rem,2vw,1.6rem);font-weight:600;line-height:1.25;
-  letter-spacing:-.01em;transition:color 130ms ease}
-.post-link:hover{color:var(--accent);text-decoration:none}
-.post-summary{margin:.45rem 0 0;max-width:38rem;color:var(--ink-2);font-size:15.5px}
-/* A draft is visible only in a local preview, and it says so rather than
-   looking like something that shipped. */
-.draft-flag{display:inline-block;margin-left:.5rem;padding:.1rem .4rem;
-  border:1px solid var(--rule);
+.post-link{display:block;color:var(--ink);
+  font-size:clamp(1.3rem,2.6vw,1.9rem);font-weight:600;line-height:1.25;
+  letter-spacing:-.02em;text-decoration:none;transition:color 130ms ease}
+.post-link:hover{color:var(--accent)}
+.post-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.post-summary{margin:.5rem 0 0;max-width:34rem;color:var(--ink-2);
+  font-size:clamp(15px,1.2vw,16.5px);line-height:1.6}
+/* A draft is visible only in a local preview, and says so rather than looking
+   like something that shipped. */
+.post-draft{display:inline-block;margin-left:.5rem;padding:.1rem .4rem;
+  border:1px solid var(--ring);
   font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--muted);vertical-align:.18em}
+  text-transform:uppercase;color:var(--muted);vertical-align:.2em}
+/* The date line under a post's lede, in the stage. */
+.post-meta{margin:.9rem 0 0;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
 
-.empty{margin:0;padding:1.5rem 0;border-top:1px solid var(--rule);color:var(--ink-2)}
-
-/* ---- a post ----
-   One column at a reading measure. Nothing sits beside the text: a sidebar on a
-   page with six posts in it is furniture waiting for content. */
-.post{max-width:38rem}
-.post-head{margin-bottom:2.5rem}
-/* In a post's head the lede is followed by the date line, so it does not carry
-   the index's gap under it. */
-.post-head .page-lede{margin-bottom:0}
-/* A post's title is the largest line on its page, and smaller than the one on
-   the index: a headline of a dozen words set at the home page's scale runs to
-   four lines of display type before the reader has learned anything. */
-.post .page-title{font-size:clamp(1.9rem,3.2vw,2.7rem);max-width:26ch}
-.post-meta{margin:.75rem 0 0;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
-.prose{font-size:17.5px}
-.prose>*+*{margin-top:1.15rem}
-.prose h2{margin:2.75rem 0 .9rem;font-size:1.5rem;font-weight:600;line-height:1.25;
-  letter-spacing:-.01em}
-.prose h3{margin:2rem 0 .7rem;font-size:1.18rem;font-weight:600;line-height:1.3}
-.prose strong{font-weight:650}
-.prose ul,.prose ol{margin-top:1.15rem;padding-left:1.35rem}
-.prose li+li{margin-top:.4rem}
-.prose blockquote{margin:1.6rem 0;padding:.15rem 0 .15rem 1.2rem;
-  border-left:2px solid var(--accent);color:var(--ink-2)}
-.prose blockquote p{margin:0}
-.prose blockquote p+p{margin-top:.8rem}
-.prose code{font-family:var(--font-mono);font-size:.875em;
-  padding:.1em .3em;background:var(--surface);border:1px solid var(--rule)}
-/* A code block is a plate: one hairline, one fill, square corners. */
-.prose pre{margin:1.6rem 0;padding:.9rem 1rem;overflow-x:auto;
-  background:var(--surface);border:1px solid var(--rule);
+/* ---- an article ----
+   One column at a reading measure, under the body column's own padding. Nothing
+   sits beside it: a sidebar on a site with six posts is furniture waiting for
+   content. */
+.post{max-width:34rem}
+/* One interval between blocks, set on the children rather than on each element
+   in turn: a rule further down that gave paragraphs a colour and a size also
+   zeroed their margins, and two paragraphs ran together for it. */
+.post>*{margin-top:0;margin-bottom:0}
+.post>*+*{margin-top:1.15rem}
+.post p{color:var(--ink-2);font-size:clamp(17px,1.5vw,20px);line-height:1.6}
+/* Sized as the guide window's headings are, which is this page family's answer
+   for a heading inside prose at reading size. */
+.post h2{margin-top:2.8rem;margin-bottom:.9rem;font-size:clamp(1.3rem,2.6vw,1.9rem);
+  font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.post h3{margin-top:2rem;margin-bottom:.6rem;font-size:1.15rem;font-weight:600;color:var(--ink)}
+.post strong{color:var(--ink)}
+.post ul,.post ol{padding-left:1.35rem;
+  color:var(--ink-2);font-size:clamp(17px,1.5vw,20px);line-height:1.6}
+.post li+li{margin-top:.4rem}
+.post blockquote{margin-top:1.8rem;margin-bottom:1.8rem;padding:.15rem 0 .15rem 1.2rem;
+  border-left:2px solid var(--accent)}
+.post blockquote p{margin:0}
+.post blockquote p+p{margin-top:.8rem}
+/* Machine text keeps the terminal's costume from the landing page: the plane
+   behind it, a hairline ring around it, the soft corner that page gives its
+   command line. */
+.post code{font-family:var(--font-mono);font-size:.86em;
+  padding:.1em .3em;border-radius:4px;background:var(--plane);border:1px solid var(--ring)}
+.post pre{margin-top:1.8rem;margin-bottom:1.8rem;padding:.8rem 1rem;overflow-x:auto;border-radius:8px;
+  background:var(--plane);border:1px solid var(--ring);
   font-family:var(--font-mono);font-size:14px;line-height:1.55}
-.prose pre code{padding:0;background:none;border:0;font-size:inherit}
+.post pre code{padding:0;border:0;border-radius:0;background:none;font-size:inherit}
 /* Wide content scrolls inside its own box; the page never scrolls sideways. */
-.prose .table-wrap{overflow-x:auto;margin:1.6rem 0}
-.prose table{border-collapse:collapse;width:100%;font-size:15px}
-.prose th,.prose td{padding:.5rem .7rem;border-bottom:1px solid var(--rule);text-align:left}
-.prose th{font-weight:600;color:var(--ink-2)}
-.prose figure{margin:1.8rem 0}
-.prose figcaption{margin-top:.5rem;font-size:14px;color:var(--muted)}
+.post table{display:block;overflow-x:auto;border-collapse:collapse;
+  margin-top:1.8rem;margin-bottom:1.8rem;font-size:15px}
+.post th,.post td{padding:.5rem .7rem;border-bottom:1px solid var(--rule);text-align:left}
+.post th{font-weight:600;color:var(--ink-2)}
+.post figcaption{margin-top:.5rem;color:var(--muted);font-size:14px}
 
-.post-foot{margin-top:3.5rem;padding-top:1.5rem;border-top:1px solid var(--rule);
-  font-size:15px;color:var(--ink-2)}
-
-.foot{max-width:62rem;margin:0 auto;
-  padding:2rem clamp(1.2rem,5vw,3rem) 3rem;border-top:1px solid var(--rule);
-  display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;align-items:baseline;
-  font-size:14px;color:var(--muted)}
-.foot a{color:var(--ink-2)}
-.foot a:hover{color:var(--ink)}
-.foot .right{margin-left:auto}
-
-/* A phone drops the texture's cost and tightens the measure. Nothing is hidden:
-   there is only one column here, and it already folds. */
-@media (max-width:34rem){
-  body{font-size:16.5px}
-  .prose{font-size:17px}
-}
-
-/* Both of these have to survive any edit to this file. */
+/* app.css carries the reduced-motion and forced-colors branches for everything
+   it defines. The one transition added here is covered by the first; the second
+   needs the borders that carry meaning on this site to survive a palette that
+   has thrown their colour away. */
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important}
+  .post-link{transition-duration:.01ms}
 }
-/* Under a two-colour palette the metal setting paints text in a gradient that
-   the mode has already discarded, so the letters vanish. The band at the top of
-   the window goes too — it is a light, and light does not survive here. */
 @media (forced-colors:active){
-  .display{background:none;-webkit-text-fill-color:currentColor;color:CanvasText;text-shadow:none}
-  body::after,body::before{display:none}
-  .posts li,.prose pre,.prose code{border-color:CanvasText}
+  .post-list li,.post pre,.post code,.post-draft{border-color:CanvasText}
+  .post blockquote{border-left-color:CanvasText}
 }

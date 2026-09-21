@@ -26,29 +26,43 @@ later.
 
 ## The look
 
-One stylesheet, assembled at build time from two files:
+The header and the page layout are the landing page's, not a copy of it.
+`hack/sync-site.sh` renders that page from the tacit working copy next door
+(`make site` there) and takes five things out of the bundle:
 
-- `assets/css/tokens.css` — **generated**, never edited. `hack/sync-tokens.sh`
-  copies the palette out of `../tacit/internal/ui/assets/app.css`, and records
-  the commit it came from.
-- `assets/css/blog.css` — every rule the site has, written against those tokens.
+- `assets/css/app.css` — the product's stylesheet, whole.
+- `static/assets/fonts/` — the faces it names, at the paths it names.
+- `layouts/partials/site-head.html` — the head's prelude: favicon, the theme the
+  reader last chose, the boot guard, and the critical CSS floor.
+- `layouts/partials/site-masthead.html` and `site-theme.html` — the masthead
+  markup, byte for byte, and the theme toggle's behaviour.
 
-Read the header of `app.css` before changing anything visual, and the header of
-`blog.css` for which of its rules this site keeps and which one it is exempt
-from. A hex literal in `blog.css` is a bug: the palette has one source, and the
-reason is that two surfaces of one product drift apart a shade at a time.
+All five are generated. Editing one is a change that the next sync silently
+reverts, and `make check` fails first.
+
+`assets/css/blog.css` is the only hand-written stylesheet, and it holds what a
+landing page has no use for: a list of posts and an article. Everything else —
+ground, stage, masthead, wordmark, nav, toggle, display type, body column,
+close line — comes from `app.css`. The test of any rule you are about to add
+there: does `app.css` already say it? This file replaced one that answered yes
+about forty times, and still did not match the page it was imitating.
+
+Read the header of `app.css` before changing anything visual, and `blog.css`'s
+own header for which of the house rules this surface keeps.
 
 ```sh
-make tokens    # re-copy after the palette changes next door
-make check     # fail if this copy has drifted
+make site     # re-take the chrome after the landing page changes
+make check    # both drifts, see below
 ```
 
-`make check` needs the tacit working copy beside this one. CI cannot run it —
-the two repositories are separate — so it is a local target, worth running when
-you have just changed `app.css`.
+Two drifts, two guards, and they catch different faults:
 
-The fonts under `static/fonts/` are copies of the registry's, with their
-licences. Nothing is fetched at runtime: no CDN, no icon font, no framework.
+- `hack/sync-site.sh --check` — the chrome here against the landing page it came
+  from. Needs the tacit checkout beside this one, so CI cannot run it; run it
+  when you have just changed `internal/ui`.
+- `hack/check-masthead.sh` — the built page against that chrome, which catches a
+  template that stops including it. No checkout and no browser, so CI runs it on
+  every push.
 
 ## How it is served
 

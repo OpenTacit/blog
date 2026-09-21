@@ -1,8 +1,0 @@
-<footer class="foot">
- <span>© {{ now.Year }} The OpenTacit Authors</span>
- <a href="{{ .Site.Params.repo }}">Source</a>
- <a href="{{ .Site.Params.site }}">opentacit.com</a>
- {{- with .Site.Home.OutputFormats.Get "rss" }}
- <a class="right" href="{{ .Permalink }}">RSS</a>
- {{- end }}
-</footer>

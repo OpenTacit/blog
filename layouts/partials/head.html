@@ -1,18 +1,17 @@
-{{- $tokens := resources.Get "css/tokens.css" -}}
+{{- $app := resources.Get "css/app.css" -}}
 {{- $blog := resources.Get "css/blog.css" -}}
-{{- $css := slice $tokens $blog | resources.Concat "css/blog.css" | minify | fingerprint -}}
+{{- $css := slice $app $blog | resources.Concat "css/site.css" | minify | fingerprint -}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ if .IsHome }}{{ .Site.Title }} Blog{{ else }}{{ .Title }} · {{ .Site.Title }}{{ end }}</title>
 <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
 <link rel="canonical" href="{{ .Permalink }}">
-{{- /* One stylesheet, tokens first. The palette has one source (hack/sync-tokens.sh). */}}
-<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
-{{- /* The theme is read before first paint, so a reader who chose dark never
-       sees a white flash. Same storage key as the registry, though a different
-       origin keeps its own copy — a browser will not share one across hosts. */}}
-<script>(function(){try{var t=localStorage.getItem('tacit-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+{{ partial "site-head.html" . }}
+{{- /* Loaded the way the landing page loads it, onload and all: the boot guard
+       in the prelude above hides the page's content until this arrives, and a
+       link without that attribute leaves a reader looking at the ground for as
+       long as the guard's timer runs. */}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" onload="document.documentElement.classList.remove('booting')">
 {{- with .OutputFormats.Get "rss" }}
 <link rel="alternate" type="application/rss+xml" title="{{ $.Site.Title }}" href="{{ .Permalink }}">
 {{- end }}

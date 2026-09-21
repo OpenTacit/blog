@@ -4,7 +4,7 @@
 HUGO ?= hugo
 TACIT ?= ../tacit
 
-.PHONY: serve build drafts tokens check clean
+.PHONY: serve build drafts site check clean
 
 ## serve: the local preview, drafts included, at http://localhost:1313
 serve:
@@ -18,13 +18,16 @@ build:
 drafts:
 	$(HUGO) -D --minify
 
-## tokens: re-copy the palette out of the registry's stylesheet
-tokens:
-	./hack/sync-tokens.sh $(TACIT)
+## site: re-take the landing page's chrome — stylesheet, fonts, head prelude,
+## masthead and theme toggle — from the tacit working copy next door
+site:
+	./hack/sync-site.sh $(TACIT)
 
-## check: fail if the palette here has drifted from app.css next door
+## check: both drifts. The chrome here against the landing page it came from,
+## and the built page against the chrome.
 check:
-	./hack/sync-tokens.sh --check $(TACIT)
+	./hack/sync-site.sh --check $(TACIT)
+	./hack/check-masthead.sh
 
 clean:
 	rm -rf public resources

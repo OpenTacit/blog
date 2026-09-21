@@ -62,13 +62,21 @@ jobs:
           # The custom domain has to survive the build: without this file GitHub
           # serves the site at opentacit.github.io and drops the domain.
           grep -qx 'blog.opentacit.com' public/CNAME
+          # The header a reader gets is the landing page's, not a lookalike.
+          # This one needs no tacit checkout: it compares the built page with the
+          # partial that was taken from it. The partial's own currency is
+          # hack/sync-site.sh --check, which does need the checkout and so runs
+          # beside the two repositories rather than here.
+          ./hack/check-masthead.sh
           # A draft must never reach the live site, whatever the flag said
-          # locally. Two things this pattern has to get right, both found by
+          # locally. Three things this pattern has to get right, each found by
           # running it: the class is matched without its quotes, because
           # --minify strips them and a pattern copied from the template would
-          # match nothing; and only HTML is searched, because the stylesheet
-          # carries the rule that styles the flag and would fail every build.
-          ! grep -rl --include='*.html' 'draft-flag' public/ || {
+          # match nothing; only HTML is searched, because the stylesheet carries
+          # the rule that styles the flag and would fail every build; and the
+          # name is the one the template writes today, post-draft, which is not
+          # the name it was written with.
+          ! grep -rl --include='*.html' 'post-draft' public/ || {
             echo "a draft reached the build — remove draft: true or keep it out of main" >&2
             exit 1
           }

@@ -3,12 +3,27 @@
 <head>
 {{ partial "head.html" . }}
 </head>
-<body>
-{{ partial "masthead.html" . }}
-<main class="wrap">
+{{/* The landing page's document, with its own sections taken out: body.site for
+     the ground, .site-stage for the masthead and the page's one large line, and
+     .site-body for the column under it. Every class here is one app.css already
+     defines for that page, and the masthead is that page's own markup
+     (hack/sync-site.sh).
+
+     The stage is written here rather than in a partial because the page
+     templates fill it: a block inside a partial is not a block a template can
+     define, and the first version of this had the lede silently dropped for
+     exactly that reason. */}}
+<body class="site">
+<header class="site-stage stage-flat">
+{{ partial "site-masthead.html" . }}
+{{ block "stage" . }}<h1 class="site-title">{{ .Title }}</h1>{{ end }}
+</header>
+<main class="site-body">
 {{ block "main" . }}{{ end }}
+<p class="site-close">{{ block "close" . }}Written in Berkeley, California.
+ <a href="https://opentacit.com">OpenTacit</a>.{{ end }}
+ {{- with .Site.Home.OutputFormats.Get "rss" }} <a href="{{ .Permalink }}">RSS</a>.{{ end }}</p>
 </main>
-{{ partial "foot.html" . }}
-{{ partial "theme.html" . }}
+{{ partial "site-theme.html" . }}
 </body>
 </html>
