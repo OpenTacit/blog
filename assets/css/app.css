@@ -1359,7 +1359,12 @@ a.bar-row:hover{background:color-mix(in srgb, var(--ink) 4%, transparent);text-d
    background-clip support the colour underneath shows and it is still a number. */
 .hero-value{font-size:76px;font-weight:250;letter-spacing:-.03em;line-height:1.02;color:var(--figure);
   background:var(--spectrum);-webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent}
+  -webkit-text-fill-color:transparent;
+  /* The same room the display headings get, and for the same reason: this paint
+     stops at the box, the leading is tighter than the font's, and a thousands
+     comma hangs below the line. Taken back out of the margin so the figure and
+     its label keep their gap. */
+  padding-bottom:.18em;margin-bottom:-.18em}
 .hero-what{margin:0;color:var(--ink-2);font-size:13.5px;line-height:1.45}
 .hero-what b{color:var(--ink)}
 .hero-sub{margin:.35rem 0 0;color:var(--muted);font-size:12px}
@@ -4647,6 +4652,17 @@ body.site::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:non
    between a title's two lines wide enough to read as two titles. */
 .site-flow-head h2,.site-priv-head h2,.site-see-head h2{margin:0 0 .6rem;
   font-size:clamp(1.35rem,2.4vw,2rem);line-height:1.15;letter-spacing:-.02em}
+/* Room under the last line for the descenders, because background-clip:text
+   paints inside the element's box and nowhere else. These headings are set at
+   display size with a leading tighter than their own font's — 1.02 on the
+   headline — so the line box ends above the bottom of a g, a y or a comma, and
+   the part that hangs below it simply never gets painted. It reads as a glyph
+   with its tail cut off, which is what it is.
+   The padding is taken back out of the margin, so the box grows where the paint
+   needs it and the page's spacing does not move a pixel. */
+.site-title{padding-bottom:.18em;margin-bottom:-.18em}
+.site-flow-head h2,.site-priv-head h2,.site-see-head h2{
+  padding-bottom:.18em;margin-bottom:calc(.6rem - .18em)}
 /* The three sections' decks, and the landing page's own size for them. The
    global .hint is 12px because in the dashboard it is chrome — the line under a
    form field. Here it is the sentence a section opens with, under a title that
