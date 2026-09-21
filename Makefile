@@ -5,6 +5,16 @@ HUGO ?= hugo
 TACIT ?= ../tacit
 DOCS ?= ../tacit-internal-docs
 
+# The preview answers on every interface, so a draft can be read on a phone or
+# an iPad on the same network rather than only on this machine.
+BIND ?= 0.0.0.0
+PORT ?= 1313
+# Live reload's script carries this address, so a page opened from another
+# device against a localhost base URL loads once and then never updates. It
+# defaults to this machine's name; override it with the address you actually
+# type, e.g. make serve HOST=longreach.tail81644.ts.net
+HOST ?= $(shell hostname -f 2>/dev/null || hostname)
+
 .PHONY: preview announcement serve build drafts site check clean
 
 ## preview: write the announcement from ../tacit-internal-docs, then serve it.
@@ -15,9 +25,12 @@ preview: announcement serve
 announcement:
 	./hack/announcement.sh $(DOCS)
 
-## serve: the local preview, drafts included, at http://localhost:1313
+## serve: the local preview, drafts included, on every interface at :1313
 serve:
-	$(HUGO) server -D --disableFastRender
+	@echo "preview: http://$(HOST):$(PORT)/"
+	$(HUGO) server -D --disableFastRender \
+		--bind $(BIND) --port $(PORT) \
+		--baseURL "http://$(HOST):$(PORT)/" --appendPort=false
 
 ## build: what CI publishes — no drafts, minified, real base URL
 build:
